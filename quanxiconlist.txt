@@ -1,0 +1,9 @@
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Proxy.png
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/GlobalMedia.png
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/DomesticMedia.png
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Microsoft.png
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Telegram.png
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Apple.png
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Direct.png
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Advertising.png
+img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Final.png
