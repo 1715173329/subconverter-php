@@ -215,7 +215,7 @@ function get_ss_all($nt){
             $nodenum=strpos($nt,":",$panum+1);
             $node=substr($nt,$panum+1,$nodenum-$panum-1);
             $remarksnum=strpos($nt,"#");
-            $portnum=strpos($nt,"/");
+            $portnum=strpos($nt,"#");
             $port=substr($nt,$nodenum+1,$portnum-$nodenum-1);
             if(!$preg){
                 $remarks=rtrim(rawurldecode(substr($nt,$remarksnum+1)));

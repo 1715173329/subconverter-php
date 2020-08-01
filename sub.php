@@ -9,7 +9,7 @@ $count=get_url_count($_GET['url']);
 $skey=get_url_type($_GET['url']);
 $s=get_url_config($_GET['url']);
 $name=array();
-if(stripos($ua,"clash")!==false or $_GET['target']!=="quanx"){
+if(stripos($ua,"clash")!==false or $_GET['target']=="clash"){
 $txt="";
 $preg=$_GET['preg'];
 if($count===0){
@@ -45,7 +45,7 @@ if($count===0){
             }else{
                 list($node,$port,$type,$protocol,$cipher,$obfs,$password,$obfsparam,$protoparam,$remarks,$group)=get_ssr_all($nt);
             }
-            if(in_array($cipher,$supcipher)){
+            if(!in_array($cipher,$supcipher)){
                 continue;
             }
             if(in_array($remarks,$name)){
@@ -122,7 +122,7 @@ if($count===0){
             }else{
                 list($node,$port,$type,$protocol,$cipher,$obfs,$password,$obfsparam,$protoparam,$remarks,$group)=get_ssr_all($nt);
             }
-            if(in_array($cipher,$supcipher)){
+            if(!in_array($cipher,$supcipher)){
                 continue;
             }
             if(in_array($remarks,$name)){
@@ -174,7 +174,7 @@ if($count===0){
             }else{
                 list($node,$port,$type,$protocol,$cipher,$obfs,$password,$obfsparam,$protoparam,$remarks,$group)=get_ssr_all($nt);
             }
-            if(in_array($cipher,$supcipher)){
+            if(!in_array($cipher,$supcipher)){
                 continue;
             }
             if(in_array($remarks,$name)){
@@ -204,7 +204,7 @@ if($count===0){
     echo fread($handle, filesize ('clashlist.txt'));
     fclose($handle);
 }
-}elseif(stripos($ua,"Quantumult%20X")!==false or $_GET['target']==="quanx"){
+}elseif(stripos($ua,"Quantumult%20X")!==false or $_GET['target']=="quanx"){
     $handle=fopen('quanxhead.txt', "r");
     echo fread($handle, filesize ('quanxhead.txt'));
     fclose($handle);
