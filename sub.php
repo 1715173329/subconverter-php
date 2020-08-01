@@ -32,7 +32,7 @@ if($count===0){
                 continue;
             }
             echo ' - {name: "'.$remarks.'", server: "'.$node.'", port: '.$port.', type: "ss", cipher: "'.$cipher.'", password: "'.$password.'" ';
-            if($obfs!==""){
+            if($plugin!==""){
                 echo ', plugin: "'.$plugin.'", plugin-opts: {mode: "'.$obfsmode.'", host: "'.$obfshost.'"}}';
             }else{
                 echo "}";
@@ -75,6 +75,8 @@ if($count===0){
             $id=get_v2_id($nt);
             $host=get_v2_host($nt);
             if($host==="" or $host==="none" and $net=="ws"){
+                $host=$node;
+            }elseif($host==="" or $host==="none" and $net=="wss"){
                 $host=$node;
             }
             $path=get_v2_path($nt);
@@ -229,9 +231,6 @@ if($count===0){
             }else{
                 list($node,$port,$type,$protocol,$cipher,$obfs,$password,$obfsparam,$protoparam,$remarks,$group)=get_ssr_all($nt);
             }
-            if(in_array($cipher,$supcipher)){
-                continue;
-            }
             if(in_array($remarks,$name)){
                 continue;
             }
@@ -258,5 +257,85 @@ if($count===0){
         echo "\n";
     }
     echo "\n[server_remote]\n\n[filter_remote]\n";
+    $handle=fopen('quanxfilter.txt', "r");
+    echo fread($handle, filesize ('clashlist.txt'));
+    fclose($handle);
+    echo "\n[rewrite_remote]\n\n[server_local]\n";
+    $name=array();
+    foreach($s as $key => $nt){
+        if($skey[$key]==="ss"){
+            if(get_ss_all($nt)==0){
+                continue;
+            }else{
+                list($cipher,$password,$type,$node,$remarks,$port,$plugin,$obfsmode,$obfshost)=get_ss_all($nt);
+            }
+            if(in_array($remarks,$name)){
+                continue;
+            }
+            echo "shadowsocks = ".$node.":".$port.", method=".$cipher.", password=".$password.", ";
+            if($plugin!==""){
+                echo "obfs=".$obfsmode.", obfs-host=".$obfshost.", ";
+            }
+            echo "tag=".$remarks."\n";
+            array_push($name,$remarks);
+        }elseif($skey[$key]==="ssr"){
+            if(get_ssr_all($nt)==0){
+                continue;
+            }else{
+                list($node,$port,$type,$protocol,$cipher,$obfs,$password,$obfsparam,$protoparam,$remarks,$group)=get_ssr_all($nt);
+            }
+            if(in_array($remarks,$name)){
+                continue;
+            }
+                echo "shadowsocks = ".$node.":".$port.", method=".$cipher.", password=".$password.", ssr-protocol:".$protocol.", ";
+                if($protoparam!==""){
+                    echo "ssr-protocol-param=".$protocol.", ";
+                }
+                echo "obfs= ".$obfs.", ";
+                if($obfsparam!==""){
+                    echo "obfs-host=".$obfsparam.", ";
+                }
+                echo "tag=".$remarks."\n";
+                array_push($name,$remarks);
+        }elseif($skey[$key]==="vmess"){
+            $node=get_v2_node($nt);
+            $port=get_v2_port($nt);
+            $net=get_v2_net($nt);
+            if(!$preg){
+                $remark=get_v2_remark($nt);
+            }else{
+                if(preg_match($preg,get_v2_remark($nt))){
+                    $remark=get_v2_remark($nt);
+                }else{
+                    continue;
+                }
+            }
+            if(in_array($remark,$name)){
+                continue;
+            }
+            $type=get_v2_type($nt);
+            $aid=get_v2_aid($nt);
+            $id=get_v2_id($nt);
+            $host=get_v2_host($nt);
+            if($host==="" or $host==="none" and $net=="ws"){
+                $host=$node;
+            }elseif($host==="" or $host==="none" and $net=="wss"){
+                $host=$node;
+            }
+            $path=get_v2_path($nt);
+            $cipher="auto";
+            $tls=get_v2_tls($nt);
+            echo "vmess = ".$node.":".$port.", method=chacha20-ietf-poly1305, password=".$id.", ";
+            if($net=="ws"){
+                echo "obfs=".$net.", obfs-host=".$host.", obfs-uri=".$path.", ";
+            }elseif($net=="wss"){
+                echo "obfs=".$net.", obfs-host=".$host.", obfs-uri=".$path.", tls-verification=true, ";
+            }elseif($net=="over-tls"){
+                echo "obfs=".$net.", obfs-host=".$host.", obfs-uri=".$path.", tls-verification=true, ";
+            }
+            echo "tag=".$remark."\n";
+        }
+    }
+    echo "\n[filter_local]\nGEOIP,CN,🎯Direct\nFINAL,🖐️Missing\n\n[rewrite_local]\n[mitm]";
 }
 ?>
