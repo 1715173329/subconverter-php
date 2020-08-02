@@ -252,7 +252,7 @@ if($count===0){
     echo fread($handle, filesize ('clashlist.txt'));
     fclose($handle);
 }
-}elseif(stripos($ua,"Quantumult%20X")!==false or $_GET['target']=="quanx"){
+}elseif(stripos(urldecode($ua),"Quantumult X")!==false or $_GET['target']=="quanx"){
     $handle=fopen('quanxhead.txt', "r");
     echo fread($handle, filesize ('quanxhead.txt'));
     fclose($handle);
@@ -414,5 +414,45 @@ if($count===0){
         }
     }
     echo "\n[filter_local]\nGEOIP,CN,🎯Direct\nFINAL,🖐️Missing\n\n[rewrite_local]\n[mitm]";
+}elseif(stripos(urldecode($ua),"Surge")!==false or $_GET['target']=="surge"){
+    if($_GET['nodelist']=="true"){
+        foreach($s as $key => $nt){
+            if($skey[$key]=="ss"){
+            if(get_ss_all($nt)==0){
+                continue;
+            }else{
+                list($cipher,$password,$type,$node,$remarks,$port,$plugin,$obfsmode,$obfshost)=get_ss_all($nt);
+            }
+            if(in_array($remarks,$name)){
+                continue;
+            }
+            if(in_array(gethostbyname($node).":".$port,$ips) and $_GET['iprepeat']==="true"){
+                continue;
+            }
+            array_push($ips,gethostbyname($node).":".$port);
+            array_push($name,$remarks);
+            echo $remarks." = ss, ".$node.", ".$port.", encrypt-method=".$cipher.", password=".$password.", ";
+            if($obfsmode!==""){
+                echo "obfs=".$obfsmode.", ";
+            }
+            if($obfshost!==""){
+                echo "obfs-host=".$obfshost.", ";
+            }
+            if($_GET['surge-tfo']=="true"){
+                echo "tfo=true, ";
+            }else{
+                echo "tfo=false, ";
+            }
+            if($_GET['surge-udprelay']=="true"){
+                echo "udp-relay=true ";
+            }else{
+                echo "udp-relay=false ";
+            }
+            echo "\n";
+            }elseif($skey[$key]=="vmess"){
+                
+            }
+        }
+    }
 }
 ?>

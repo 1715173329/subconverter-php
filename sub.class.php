@@ -224,7 +224,7 @@ function get_ss_all($nt){
             $nodenum=strpos($nt,":",$panum+1);
             $node=substr($nt,$panum+1,$nodenum-$panum-1);
             $remarksnum=strpos($nt,"#");
-            $portnum=strpos($nt,"#");
+            $portnum=strpos($nt,"/");
             $port=substr($nt,$nodenum+1,$portnum-$nodenum-1);
             if(!$preg){
                 $remarks=rtrim(rawurldecode(substr($nt,$remarksnum+1)));
@@ -234,6 +234,14 @@ function get_ss_all($nt){
                 }else{
                     return 0;
                 }
+            }
+            if($port==false){
+                $portnum=strpos($nt,"#");
+                $port=substr($nt,$nodenum+1,$portnum-$nodenum-1);
+            }
+            if(!is_numeric($port)){
+                $port1=preg_match_all('/\d/S',$port, $matches);
+                $port=implode('',$matches[0]);
             }
             if(stripos($remarks,": ")!==false){
                 return 0;
@@ -249,7 +257,7 @@ function get_ss_all($nt){
                 }
                 $obfsmodenum=stripos($nt,"obfs=")+4;
                 $obfsmode=substr($nt,$obfsmodenum+1,stripos($nt,";",$obfsmodenum+1)-$obfsmodenum-1);
-                $obfshostnum=stripos($nt,"obfs-host=")+9;
+                $obfshostnum=stripos($nt,"obfs host=")+9;
                 $obfshost=substr($nt,$obfshostnum+1,stripos($nt,"#",$obfshostnum+1)-$obfshostnum-1);
             }
             $output[]=$cipher;
@@ -274,7 +282,7 @@ function get_url_type($input){
             array_push($skey,"vmess");
             $count++;
         }elseif(strpos($sub,'ss://')!==false){
-            array_push($s,substr($sub,5));
+            array_push($s,urldecode(base64_replace(substr($sub,5))));
             array_push($skey,"ss");
             $count++;
         }elseif(strpos($sub,'ssr://')!==false){
@@ -296,7 +304,7 @@ function get_url_config($input){
             array_push($skey,"vmess");
             $count++;
         }elseif(strpos($sub,'ss://')!==false){
-            array_push($s,substr($sub,5));
+            array_push($s,urldecode(base64_replace(substr($sub,5))));
             array_push($skey,"ss");
             $count++;
         }elseif(strpos($sub,'ssr://')!==false){
@@ -318,7 +326,7 @@ function get_url_count($input){
             array_push($skey,"vmess");
             $count++;
         }elseif(strpos($sub,'ss://')!==false){
-            array_push($s,substr($sub,5));
+            array_push($s,urldecode(base64_replace(substr($sub,5))));
             array_push($skey,"ss");
             $count++;
         }elseif(strpos($sub,'ssr://')!==false){
