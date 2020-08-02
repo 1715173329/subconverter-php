@@ -1,4 +1,3 @@
-<pre style="word-wrap: break-word; white-space: pre-wrap;">
 <?php
 if(!$_GET['url']){
     echo "Fuck You!";
@@ -417,4 +416,3 @@ if($count===0){
     echo "\n[filter_local]\nGEOIP,CN,🎯Direct\nFINAL,🖐️Missing\n\n[rewrite_local]\n[mitm]";
 }
 ?>
-</pre>
