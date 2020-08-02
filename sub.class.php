@@ -38,11 +38,17 @@ function get_v2_remark($input){
     $num1=stripos($input,'"ps":"')+5;
     $num2=strpos($input,',',$num1+1);
     $output=unicodeDecode(substr($input,$num1+1,$num2-$num1-2));
+    if(stripos($remark,": ")!==false){
+                return 0;
+            }
     return $output;
     }
     $num1=stripos($input,'"remark":"')+9;
     $num2=strpos($input,',',$num1+1);
     $output=unicodeDecode(substr($input,$num1+1,$num2-$num1-2));
+    if(stripos($remark,": ")!==false){
+                return 0;
+            }
     return $output;
 }
 function get_v2_net($input){
@@ -181,6 +187,9 @@ function get_ssr_all($nt){
             }
                 }
             }
+            if(stripos($remarks,": ")!==false){
+                return 0;
+            }
             if(!strpos($nt,"group=")){
                 $group="".$node.":".$port."";
             }else{
@@ -226,6 +235,9 @@ function get_ss_all($nt){
                     return 0;
                 }
             }
+            if(stripos($remarks,": ")!==false){
+                return 0;
+            }
             $plugin="";
             $obfsmode="";
             $obfshost="";
@@ -251,102 +263,11 @@ function get_ss_all($nt){
             $output[]=$obfshost;
             return $output;
 }
-function get_url_config($input){
-    $s=array();
-    $skey=array();
-    if(stripos($input,"ssr://") or stripos($input,"ss://") or stripos($input,"ssr://")){
-    if(strpos($input,'vmess://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($input,8))));
-            array_push($skey,"vmess");
-            $count++;
-        }elseif(strpos($input,'ss://')!==false){
-            array_push($s,urldecode(substr($input,5)));
-            array_push($skey,"ss");
-            $count++;
-        }elseif(strpos($input,'ssr://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($input,6))));
-            array_push($skey,"ssr");
-            $count++;
-        }
-}else{
-if(stripos($input,"|")!==false){
-    $url=explode("|",$input);
-    foreach($url as $u){
-        $ch=curl_init();
-        curl_setopt($ch, CURLOPT_URL, $u);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $txt = $txt."\n".base64_decode(curl_exec($ch));
-        curl_close($ch);
-    }
-}else{
-    $ch=curl_init();
-    curl_setopt($ch, CURLOPT_URL, $input);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $txt = base64_decode(curl_exec($ch));
-    curl_close($ch);
-}
-$subs=explode("\n",$txt);
-    foreach($subs as $subkey => $sub){
-        if(strpos($sub,'vmess://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($sub,8))));
-            array_push($skey,"vmess");
-            $count++;
-        }elseif(strpos($sub,'ss://')!==false){
-            array_push($s,urldecode(substr($sub,5)));
-            array_push($skey,"ss");
-            $count++;
-        }elseif(strpos($sub,'ssr://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($sub,6))));
-            array_push($skey,"ssr");
-            $count++;
-        }
-    }
-}
-    return $s;
-}
 function get_url_type($input){
     $s=array();
+    $count=0;
     $skey=array();
-    if(stripos($input,"ssr://") or stripos($input,"ss://") or stripos($input,"ssr://")){
-    if(strpos($input,'vmess://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($input,8))));
-            array_push($skey,"vmess");
-            $count++;
-        }elseif(strpos($input,'ss://')!==false){
-            array_push($s,substr($input,5));
-            array_push($skey,"ss");
-            $count++;
-        }elseif(strpos($input,'ssr://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($input,6))));
-            array_push($skey,"ssr");
-            $count++;
-        }
-}else{
-if(stripos($input,"|")!==false){
-    $url=explode("|",$input);
-    foreach($url as $u){
-        $ch=curl_init();
-        curl_setopt($ch, CURLOPT_URL, $u);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $txt = $txt."\n".base64_decode(curl_exec($ch));
-        curl_close($ch);
-    }
-}else{
-    $ch=curl_init();
-    curl_setopt($ch, CURLOPT_URL, $input);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $txt = base64_decode(curl_exec($ch));
-    curl_close($ch);
-}
-$subs=explode("\n",$txt);
+    $subs=explode("\n",$input);
     foreach($subs as $subkey => $sub){
         if(strpos($sub,'vmess://')!==false){
             array_push($s,base64_decode(base64_replace(substr($sub,8))));
@@ -362,28 +283,54 @@ $subs=explode("\n",$txt);
             $count++;
         }
     }
-}
     return $skey;
+}
+function get_url_config($input){
+    $s=array();
+    $count=0;
+    $skey=array();
+    $subs=explode("\n",$input);
+    foreach($subs as $subkey => $sub){
+        if(strpos($sub,'vmess://')!==false){
+            array_push($s,base64_decode(base64_replace(substr($sub,8))));
+            array_push($skey,"vmess");
+            $count++;
+        }elseif(strpos($sub,'ss://')!==false){
+            array_push($s,substr($sub,5));
+            array_push($skey,"ss");
+            $count++;
+        }elseif(strpos($sub,'ssr://')!==false){
+            array_push($s,base64_decode(base64_replace(substr($sub,6))));
+            array_push($skey,"ssr");
+            $count++;
+        }
+    }
+    return $s;
 }
 function get_url_count($input){
     $s=array();
     $count=0;
     $skey=array();
-    if(stripos($input,"ssr://") or stripos($input,"ss://") or stripos($input,"ssr://")){
-    if(strpos($input,'vmess://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($input,8))));
+    $subs=explode("\n",$input);
+    foreach($subs as $subkey => $sub){
+        if(strpos($sub,'vmess://')!==false){
+            array_push($s,base64_decode(base64_replace(substr($sub,8))));
             array_push($skey,"vmess");
             $count++;
-        }elseif(strpos($input,'ss://')!==false){
-            array_push($s,substr($input,5));
+        }elseif(strpos($sub,'ss://')!==false){
+            array_push($s,substr($sub,5));
             array_push($skey,"ss");
             $count++;
-        }elseif(strpos($input,'ssr://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($input,6))));
+        }elseif(strpos($sub,'ssr://')!==false){
+            array_push($s,base64_decode(base64_replace(substr($sub,6))));
             array_push($skey,"ssr");
             $count++;
         }
-}else{
+    }
+    return $count;
+}
+function get_url($input){
+$txt="";    
 if(stripos($input,"|")!==false){
     $url=explode("|",$input);
     foreach($url as $u){
@@ -404,23 +351,6 @@ if(stripos($input,"|")!==false){
     $txt = base64_decode(curl_exec($ch));
     curl_close($ch);
 }
-$subs=explode("\n",$txt);
-    foreach($subs as $subkey => $sub){
-        if(strpos($sub,'vmess://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($sub,8))));
-            array_push($skey,"vmess");
-            $count++;
-        }elseif(strpos($sub,'ss://')!==false){
-            array_push($s,substr($sub,5));
-            array_push($skey,"ss");
-            $count++;
-        }elseif(strpos($sub,'ssr://')!==false){
-            array_push($s,base64_decode(base64_replace(substr($sub,6))));
-            array_push($skey,"ssr");
-            $count++;
-        }
-    }
-}
-    return $count;
+return $txt;
 }
 ?>
