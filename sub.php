@@ -86,7 +86,7 @@ if($count===0){
                     continue;
                 }
             }
-            if(in_array($remark,$name) or $remark==0){
+            if(in_array($remark,$name) or $remark===0){
                 continue;
             }
             $type=get_v2_type($nt);
@@ -95,7 +95,7 @@ if($count===0){
             $host=get_v2_host($nt);
             if($host==="" or $host==="none" and $net=="ws"){
                 $host=$node;
-            }elseif($host==="" or $host==="none" and $net=="wss"){
+            }elseif($host==="" or $host==="none"){
                 $host=$node;
             }
             $path=get_v2_path($nt);
@@ -172,7 +172,7 @@ if($count===0){
                     continue;
                 }
             }
-            if(in_array($remark,$name) or $remark==0){
+            if(in_array($remark,$name) or $remark===0){
                 continue;
             }
             if(in_array(gethostbyname($node).":".$port,$ips) and $_GET['iprepeat']==="true"){
@@ -236,7 +236,7 @@ if($count===0){
                     continue;
                 }
             }
-            if(in_array($remark,$name) or $remark==0){
+            if(in_array($remark,$name) or $remark===0){
                 continue;
             }
             if(in_array(gethostbyname($node).":".$port,$ips) and $_GET['iprepeat']==="true"){
@@ -383,7 +383,7 @@ if($count===0){
                     continue;
                 }
             }
-            if(in_array($remark,$name) or $remark==0){
+            if(in_array($remark,$name) or $remark===0){
                 continue;
             }
             if(in_array(gethostbyname($node).":".$port,$ips) and $_GET['iprepeat']==="true"){
@@ -396,7 +396,7 @@ if($count===0){
             $host=get_v2_host($nt);
             if($host==="" or $host==="none" and $net=="ws"){
                 $host=$node;
-            }elseif($host==="" or $host==="none" and $net=="wss"){
+            }elseif($host==="" or $host==="none"){
                 $host=$node;
             }
             $path=get_v2_path($nt);
@@ -405,8 +405,6 @@ if($count===0){
             echo "vmess = ".$node.":".$port.", method=chacha20-ietf-poly1305, password=".$id.", ";
             if($net=="ws"){
                 echo "obfs=".$net.", obfs-host=".$host.", obfs-uri=".$path.", ";
-            }elseif($net=="wss"){
-                echo "obfs=".$net.", obfs-host=".$host.", obfs-uri=".$path.", tls-verification=true, ";
             }elseif($net=="over-tls"){
                 echo "obfs=".$net.", obfs-host=".$host.", obfs-uri=".$path.", tls-verification=true, ";
             }
@@ -450,9 +448,180 @@ if($count===0){
             }
             echo "\n";
             }elseif($skey[$key]=="vmess"){
-                
+            $node=get_v2_node($nt);
+            $port=get_v2_port($nt);
+            $net=get_v2_net($nt); 
+            if(!$preg){
+                $remark=get_v2_remark($nt);
+            }else{
+                if(preg_match($preg,get_v2_remark($nt))){
+                    $remark=get_v2_remark($nt);
+                }else{
+                    continue;
+                }
+            }
+            if(in_array($remark,$name) or $remark===0){
+                continue;
+            }
+            echo $remark;
+            $type=get_v2_type($nt);
+            $aid=get_v2_aid($nt);
+            $id=get_v2_id($nt);
+            $host=get_v2_host($nt);
+            if($host==="" or $host==="none" and $net=="ws"){
+                $host=$node;
+            }elseif($host==="" or $host==="none"){
+                $host=$node;
+            }
+            $path=get_v2_path($nt);
+            $cipher="auto";
+            $tls=get_v2_tls($nt);
+            if(in_array(gethostbyname($node).":".$port,$ips) and $_GET['iprepeat']==="true"){
+                continue;
+            }
+            array_push($ips,gethostbyname($node).":".$port);
+            array_push($name,$remark);
+            echo $remark." = vmess, ".$node.", ".$port.", username=".$id.", ";
+            if($tls=="true"){
+                echo "tls=true, ";
+            }else{
+                echo "tls=false, ";
+            }
+            if($net=="ws"){
+                echo "ws=true, ws-path=".$path.", sni=".$host.", ws-headers=Host:".$host.", ";
+            }
+            echo "skip-cert-verify=0, ";
+            if($_GET['surge-tfo']=="true"){
+                echo "tfo=true, ";
+            }else{
+                echo "tfo=false, ";
+            }
+            if($_GET['surge-udprelay']=="true"){
+                echo "udp-relay=true ";
+            }else{
+                echo "udp-relay=false ";
+            }
+            echo "\n";
             }
         }
+    }else{
+        $handle=fopen('surgehead.txt', "r");
+        echo fread($handle, filesize ('surgehead.txt'));
+        fclose($handle);
+        foreach($s as $key => $nt){
+            if($skey[$key]=="ss"){
+            if(get_ss_all($nt)==0){
+                continue;
+            }else{
+                list($cipher,$password,$type,$node,$remarks,$port,$plugin,$obfsmode,$obfshost)=get_ss_all($nt);
+            }
+            if(in_array($remarks,$name)){
+                continue;
+            }
+            if(in_array(gethostbyname($node).":".$port,$ips) and $_GET['iprepeat']==="true"){
+                continue;
+            }
+            array_push($ips,gethostbyname($node).":".$port);
+            array_push($name,$remarks);
+            echo $remarks." = ss, ".$node.", ".$port.", encrypt-method=".$cipher.", password=".$password.", ";
+            if($obfsmode!==""){
+                echo "obfs=".$obfsmode.", ";
+            }
+            if($obfshost!==""){
+                echo "obfs-host=".$obfshost.", ";
+            }
+            if($_GET['surge-tfo']=="true"){
+                echo "tfo=true, ";
+            }else{
+                echo "tfo=false, ";
+            }
+            if($_GET['surge-udprelay']=="true"){
+                echo "udp-relay=true ";
+            }else{
+                echo "udp-relay=false ";
+            }
+            echo "\n";
+            }elseif($skey[$key]=="vmess"){
+            $node=get_v2_node($nt);
+            $port=get_v2_port($nt);
+            $net=get_v2_net($nt); 
+            if(!$preg){
+                $remark=get_v2_remark($nt);
+            }else{
+                if(preg_match($preg,get_v2_remark($nt))){
+                    $remark=get_v2_remark($nt);
+                }else{
+                    continue;
+                }
+            }
+            if(in_array($remark,$name) or $remark===0){
+                continue;
+            }
+            echo $remark;
+            $type=get_v2_type($nt);
+            $aid=get_v2_aid($nt);
+            $id=get_v2_id($nt);
+            $host=get_v2_host($nt);
+            if($host==="" or $host==="none" and $net=="ws"){
+                $host=$node;
+            }elseif($host==="" or $host==="none"){
+                $host=$node;
+            }
+            $path=get_v2_path($nt);
+            $cipher="auto";
+            $tls=get_v2_tls($nt);
+            if(in_array(gethostbyname($node).":".$port,$ips) and $_GET['iprepeat']==="true"){
+                continue;
+            }
+            array_push($ips,gethostbyname($node).":".$port);
+            array_push($name,$remark);
+            echo $remark." = vmess, ".$node.", ".$port.", username=".$id.", ";
+            if($tls=="true"){
+                echo "tls=true, ";
+            }else{
+                echo "tls=false, ";
+            }
+            if($net=="ws"){
+                echo "ws=true, ws-path=".$path.", sni=".$host.", ws-headers=Host:".$host.", ";
+            }
+            echo "skip-cert-verify=0, ";
+            if($_GET['surge-tfo']=="true"){
+                echo "tfo=true, ";
+            }else{
+                echo "tfo=false, ";
+            }
+            if($_GET['surge-udprelay']=="true"){
+                echo "udp-relay=true ";
+            }else{
+                echo "udp-relay=false ";
+            }
+            echo "\n";
+            }
+        }
+        echo "\n[Proxy Group]\n";
+        $groups=file('surgegroup.txt', FILE_IGNORE_NEW_LINES);
+        foreach($groups as $key => $group){
+            if($group==="🔘Select"){
+                echo "🔘Select = select, 🎯Direct";
+                foreach($name as $l){
+                    echo ", ".$l;
+                }
+            }elseif($group==="🎯Direct"){
+                echo "🎯Direct = select, DIRECT";
+            }elseif($group==="🚫Ban"){
+                echo "🚫Ban = select, REJECT, DIRECT";
+            }else{
+                echo $group." = select, 🔘Select, 🎯Direct";
+                foreach($name as $l){
+                    echo ", ".$l;
+                }
+            }
+            echo "\n";
+        }
+        echo "\n";
+        $handle=fopen('surgelist.txt', "r");
+        echo fread($handle, filesize ('surgelist.txt'));
+        fclose($handle);
     }
 }
 ?>

@@ -1,0 +1,17 @@
+[Rule]
+RULE-SET,https://raw.githubusercontent.com/tindy2013/subconverter/master/base/rules/LocalAreaNetwork.list,🎯Direct
+RULE-SET,https://gist.githubusercontent.com/tindy2013/1fa08640a9088ac8652dbd40c5d2715b/raw/connershua_clients.list,🎯Direct
+RULE-SET,https://raw.githubusercontent.com/tindy2013/subconverter/master/base/rules/MSServices.list,🚥Microsoft
+RULE-SET,https://raw.githubusercontent.com/ConnersHua/Profiles/master/Surge/Ruleset/Unbreak.list,🎯Direct
+RULE-SET,https://raw.githubusercontent.com/NobyDa/Script/master/Surge/AdRule.list,🚫Ban
+RULE-SET,https://raw.githubusercontent.com/ConnersHua/Profiles/master/Surge/Ruleset/Hijacking.list,🚫Ban
+RULE-SET,https://raw.githubusercontent.com/ConnersHua/Profiles/master/Surge/Ruleset/GlobalMedia.list,🎦Foreign Video
+RULE-SET,https://raw.githubusercontent.com/lhie1/Rules/master/Surge/Surge%203/Provider/Domestic.list,🎞️Domestic Video
+RULE-SET,https://raw.githubusercontent.com/ConnersHua/Profiles/master/Surge/Ruleset/Telegram.list,📱Telegram
+RULE-SET,https://raw.githubusercontent.com/ConnersHua/Profiles/master/Surge/Ruleset/Apple.list,🍎Apple
+RULE-SET,https://raw.githubusercontent.com/ConnersHua/Profiles/master/Surge/Ruleset/AppleNews.list,🍎Apple
+RULE-SET,https://raw.githubusercontent.com/ConnersHua/Profiles/master/Surge/Ruleset/China.list,🎯Direct
+RULE-SET,https://raw.githubusercontent.com/ConnersHua/Profiles/master/Surge/Ruleset/Global.list,🔘Select
+RULE-SET,https://raw.githubusercontent.com/NobyDa/Script/master/Surge/Download.list,🎯Direct
+GEOIP,CN,🎯Direct
+FINAL,🖐️Missing,dns-failed

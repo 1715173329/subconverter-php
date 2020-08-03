@@ -38,7 +38,7 @@ function get_v2_remark($input){
     $num1=stripos($input,'"ps":"')+5;
     $num2=strpos($input,',',$num1+1);
     $output=unicodeDecode(substr($input,$num1+1,$num2-$num1-2));
-    if(stripos($remark,": ")!==false){
+    if(stripos($output,": ")!==false){
                 return 0;
             }
     return $output;
@@ -46,7 +46,7 @@ function get_v2_remark($input){
     $num1=stripos($input,'"remark":"')+9;
     $num2=strpos($input,',',$num1+1);
     $output=unicodeDecode(substr($input,$num1+1,$num2-$num1-2));
-    if(stripos($remark,": ")!==false){
+    if(stripos($output,": ")!==false){
                 return 0;
             }
     return $output;
@@ -222,7 +222,7 @@ function get_ss_all($nt){
             $password=substr($pa,$ciphernum+1);
             $type="ss";
             $nodenum=strpos($nt,":",$panum+1);
-            $node=substr($nt,$panum+1,$nodenum-$panum-1);
+            $node=str_replace(" ","-",substr($nt,$panum+1,$nodenum-$panum-1));
             $remarksnum=strpos($nt,"#");
             $portnum=strpos($nt,"/");
             $port=substr($nt,$nodenum+1,$portnum-$nodenum-1);
@@ -347,7 +347,12 @@ if(stripos($input,"|")!==false){
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $txt = $txt."\n".base64_decode(curl_exec($ch));
+        $txt1 = curl_exec($ch);
+    if(stripos($txt1,"ssd://")!==false){
+        $txt=$txt.unicodeDecode(base64_decode(substr(base64_replace($txt1),6)));
+    }else{
+        $txt=$txt.base64_decode($txt1);
+    }
         curl_close($ch);
     }
 }else{
@@ -356,7 +361,12 @@ if(stripos($input,"|")!==false){
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $txt = base64_decode(curl_exec($ch));
+    $txt1 = curl_exec($ch);
+    if(stripos($txt1,"ssd://")!==false){
+        $txt=unicodeDecode(base64_decode(substr(base64_replace($txt1),6)));
+    }else{
+        $txt=base64_decode($txt1);
+    }
     curl_close($ch);
 }
 return $txt;
