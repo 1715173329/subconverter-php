@@ -252,7 +252,7 @@ function get_ss_all($nt){
             if(stripos($nt,"plugin")!==false){
                 $pluginnum=stripos($nt,"plugin")+6;
                 $plugin=substr($nt,$pluginnum+1,stripos($nt,";",$pluginnum+1)-$pluginnum-1);
-                if($plugin=="obfs-local"){
+                if($plugin=="obfs-local" or $plugin=="obfs local"){
                     $plugin="obfs";
                 }
                 $obfsmodenum=stripos($nt,"obfs=")+4;
@@ -349,9 +349,9 @@ if(stripos($input,"|")!==false){
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $txt1 = curl_exec($ch);
     if(stripos($txt1,"ssd://")!==false){
-        $txt=$txt.unicodeDecode(base64_decode(substr(base64_replace($txt1),6)));
+        $txt=$txt."\n".get_ssd_config($txt1);
     }else{
-        $txt=$txt.base64_decode($txt1);
+        $txt=$txt."\n".base64_decode($txt1);
     }
         curl_close($ch);
     }
@@ -363,12 +363,51 @@ if(stripos($input,"|")!==false){
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $txt1 = curl_exec($ch);
     if(stripos($txt1,"ssd://")!==false){
-        $txt=unicodeDecode(base64_decode(substr(base64_replace($txt1),6)));
+        $txt=get_ssd_config($txt1);
     }else{
         $txt=base64_decode($txt1);
     }
     curl_close($ch);
 }
 return $txt;
+}
+function get_ssd_config($input){
+    $out="";
+    $s=str_replace(array("\r\n", "\r", "\n"), "", base64_decode(substr(base64_replace($input),6)));
+    $ss=substr($s,stripos($s,'"servers":')+9);
+    $ssds=explode("{",$ss);
+    foreach($ssds as $key => $ssd){
+        if($key==0){
+            continue;
+        }
+        $nodenum1=stripos($ssd,'"server":')+8;
+        $nodenum2=stripos($ssd,",",$nodenum1+1);
+        $node=substr($ssd,$nodenum1+2,$nodenum2-$nodenum1-3);
+        $remarksnum1=stripos($ssd,'"remarks":')+9;
+        $remarksnum2=stripos($ssd,",",$remarksnum1+1);
+        $remarks=substr($ssd,$remarksnum1+2,$remarksnum2-$remarksnum1-3);
+        $passwordnum1=stripos($ssd,'"password":')+10;
+        $passwordnum2=stripos($ssd,",",$passwordnum1+1);
+        $password=substr($ssd,$passwordnum1+2,$passwordnum2-$passwordnum1-3);
+        $ciphernum1=stripos($ssd,'"encryption":')+12;
+        $ciphernum2=stripos($ssd,",",$ciphernum1+1);
+        $cipher=substr($ssd,$ciphernum1+2,$ciphernum2-$ciphernum1-3);
+        $portnum1=stripos($ssd,'"port":')+6;
+        $portnum2=stripos($ssd,",",$portnum1+1);
+        $port=substr($ssd,$portnum1+1,$portnum2-$portnum1-1);
+        $obfsnum1=stripos($ssd,'"plugin":')+8;
+        $obfsnum2=stripos($ssd,",",$obfsnum1+1);
+        $obfs=substr($ssd,$obfsnum1+2,$obfsnum2-$obfsnum1-3);
+        $obfsopitionsnum1=stripos($ssd,'"plugin_options":')+16;
+        $obfsopitionsnum2=stripos($ssd,",",$obfsopitionsnum1+1);
+        $obfsopitions=substr($ssd,$obfsopitionsnum1+2,$obfsopitionsnum2-$obfsopitionsnum1-3);
+        if($obfs==="simple-obfs"){
+            $output="ss://".base64_encode($cipher.":".$password)."@".$node.":".$port."/?plugin=obfs-local%3B".str_replace('+','%20',urlencode($obfsopitions))."#".str_replace('+','%20',urlencode(unicodeDecode($remarks)));
+        }else{
+        $output="ss://".base64_encode($cipher.":".$password)."@".$node.":".$port."#".str_replace('+','%20',urlencode(unicodeDecode($remarks)));
+        }
+        $out=$out."\n".$output;
+    }
+    return $out;
 }
 ?>
