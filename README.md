@@ -1,9 +1,9 @@
 # subconverter-php
 Utility to convert between various proxy subscription formats.
 # Supported Types
-SS/SSR/V2Ray to Clash Tag:clash<br>
-SS/SSR/V2Ray to Surge Tag:surge<br>
-SS/SSR/V2Ray to QuantumultX Tag:quanx
+SS/SSD/SSR/V2Ray to Clash Tag:clash<br>
+SS/SSD/SSR/V2Ray to Surge Tag:surge<br>
+SS/SSD/SSR/V2Ray to QuantumultX Tag:quanx
 # Quick Usage
 http://xxx.com/sub.php?url=config link(need urlencode);
 # Filter Node
